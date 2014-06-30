@@ -23,7 +23,7 @@
  */
 
 var assert = require('assert');
-var horaa = require('../lib/horaa');
+var moraa = require('../lib/moraa');
 var os = require('os');
 var fs = require('fs');
 var path = require('path');
@@ -31,14 +31,14 @@ var fooPath = path.join(__dirname, 'support/foo.js');
 var buzzPath = path.join(__dirname, 'support/buzz.js');
 var foo = require(fooPath);
 
-describe('horaa', function() {
+describe('moraa', function() {
     var realValue = os.type();
-    var osHoraa;
+    var osmoraa;
 
     describe('methods without callbacks', function(done) {
         beforeEach(function() {
-            osHoraa = horaa('os');
-            osHoraa.hijack('type', function() {
+            osmoraa = moraa('os');
+            osmoraa.hijack('type', function() {
                 return 'fake_os';
             });
         });
@@ -46,20 +46,20 @@ describe('horaa', function() {
         describe('hijack()', function() {
             it('hijacked method returns replacement value', function() {
                 assert.ok(os.type() == 'fake_os');
-                osHoraa.restore('type');
+                osmoraa.restore('type');
             });
 
             describe("when method is hijacked twice", function() {
                 it('returns correct value each time', function() {
                     assert.ok(os.type() == 'fake_os');
 
-                    osHoraa.hijack('type', function() {
+                    osmoraa.hijack('type', function() {
                         return 'fake_os2';
                     });
 
                     assert.ok(os.type() == 'fake_os2');
 
-                    osHoraa.restore('type');
+                    osmoraa.restore('type');
                     assert.ok(os.type() == realValue);
                 });
             });
@@ -67,33 +67,33 @@ describe('horaa', function() {
             describe("when method doesn't exist", function() {
                 it('throws error', function() {
                     assert.throws(function() {
-                        osHoraa.hijack('dsds', function() {});
+                        osmoraa.hijack('dsds', function() {});
                     });
                 });
             });
 
             it('works without creating objects', function() {
-                horaa('os').hijack('type', function() {
+                moraa('os').hijack('type', function() {
                     return 'fake_os';
                 });
 
                 assert.ok(os.type() == 'fake_os');
 
-                horaa('os').restore('type');
+                moraa('os').restore('type');
                 assert.ok(os.type() == realValue);
             });
         });
 
         describe('restore()', function() {
             it('restored method returns original value', function() {
-                osHoraa.restore('type');
+                osmoraa.restore('type');
                 assert.ok(os.type() == realValue);
             });
 
             describe('when restored method not hijacked', function() {
                 it('throws error', function() {
                     assert.throws(function() {
-                        osHoraa.restore('dsds');
+                        osmoraa.restore('dsds');
                     });
                 });
             });
@@ -103,15 +103,15 @@ describe('horaa', function() {
     describe('methods with callbacks', function(done) {
         var realFileSize;
         var fakeFileSize = 99;
-        var fsHoraa;
+        var fsmoraa;
 
         describe('hijack()', function(done) {
             beforeEach(function(done) {
-                fsHoraa = horaa('fs');
+                fsmoraa = moraa('fs');
                 fs.stat(fooPath, function(err, file_stat) {
                     realFileSize = file_stat.size;
 
-                    fsHoraa.hijack('stat', function(path, cb) {
+                    fsmoraa.hijack('stat', function(path, cb) {
                         cb(null, {size: fakeFileSize});
                     });
 
@@ -122,14 +122,14 @@ describe('horaa', function() {
             it('hijacked method returns replacement value', function(done) {
                 fs.stat(fooPath, function(err, result) {
                     assert.equal(result.size, fakeFileSize);
-                    fsHoraa.restore('stat');
+                    fsmoraa.restore('stat');
                     done();
                 });
             });
 
             describe('restore()', function() {
                 it('restored method returns original value', function(done) {
-                    fsHoraa.restore('stat');
+                    fsmoraa.restore('stat');
                     fs.stat(fooPath, function(err, result) {
                         assert.ok(result.size == realFileSize);
                         done();
@@ -140,12 +140,12 @@ describe('horaa', function() {
     });
 
     describe('requiring local module', function(done) {
-        var fooHoraa;
+        var foomoraa;
 
         describe('hijack()', function(done) {
             beforeEach(function() {
-                fooHoraa = horaa(fooPath);
-                fooHoraa.hijack('bar', function(cb) {
+                foomoraa = moraa(fooPath);
+                foomoraa.hijack('bar', function(cb) {
                     cb(null, 'fake bar');
                 });
             });
@@ -153,14 +153,14 @@ describe('horaa', function() {
             it('hijacked method returns replacement value', function(done) {
                 foo.bar(function(err, result) {
                     assert.equal(result, 'fake bar');
-                    fooHoraa.restore('bar');
+                    foomoraa.restore('bar');
                     done();
                 });
             });
 
             describe('restore()', function() {
                 it('restored method returns original value', function(done) {
-                    fooHoraa.restore('bar');
+                    foomoraa.restore('bar');
                     foo.bar(function(err, result) {
                         assert.equal(result, 'real bar');
                         done();
@@ -172,12 +172,12 @@ describe('horaa', function() {
 
     // The support/foo.js file requires the support/buzz.js file.
     describe('mocking local dependency', function(done) {
-        var buzzHoraa;
+        var buzzmoraa;
 
         describe('hijack()', function(done) {
             beforeEach(function() {
-                buzzHoraa = horaa(buzzPath);
-                buzzHoraa.hijack('get', function(cb) {
+                buzzmoraa = moraa(buzzPath);
+                buzzmoraa.hijack('get', function(cb) {
                     cb(null, 'fake buzz');
                 });
             });
@@ -185,14 +185,14 @@ describe('horaa', function() {
             it('hijacked method returns replacement value', function(done) {
                 foo.getBuzz(function(err, result) {
                     assert.equal(result, 'fake buzz');
-                    buzzHoraa.restore('get');
+                    buzzmoraa.restore('get');
                     done();
                 });
             });
 
             describe('restore()', function() {
                 it('restored method returns original value', function(done) {
-                    buzzHoraa.restore('get');
+                    buzzmoraa.restore('get');
                     foo.getBuzz(function(err, result) {
                         assert.equal(result, 'real buzz');
                         done();
