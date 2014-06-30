@@ -6,7 +6,7 @@
     },
     "main": "./lib/moraa",
     "description": "Mocking NodeJS Modules",
-    "author": "Mathew Allen <mathew.w.allen@gmail.com>, Arunoda Susiripala <arunoda.susiripala@gmail.com>"
+    "author": "Mathew Allen <mathew.w.allen@gmail.com>, Arunoda Susiripala <arunoda.susiripala@gmail.com>",
     "homepage":  "https://github.com/TheMallen/Moraa",
     "licenses": [
         {
