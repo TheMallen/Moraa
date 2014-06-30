@@ -1,26 +1,27 @@
 {
-    "name": "horaa",
-    "version": "0.1.2alpha",
+    "name": "moraa",
+    "version": "0.1.3alpha",
     "directories": {
         "lib": "./lib"
     },
-    "main": "./lib/horaa",
+    "main": "./lib/moraa",
     "description": "Mocking NodeJS Modules",
-    "author": "Arunoda Susiripala <arunoda.susiripala@gmail.com>",
-    "homepage": "https://github.com/arunoda/horaa",
+    "author": "Mathew Allen <mathew.w.allen@gmail.com>, Arunoda Susiripala <arunoda.susiripala@gmail.com>"
+    "homepage":  "https://github.com/TheMallen/Moraa",
     "licenses": [
         {
             "type": "The MIT License",
             "url": "http://www.opensource.org/licenses/mit-license.php"
         }
     ],
-    
     "repository" :
     {
         "type" : "git",
-        "url" : "git@github.com:arunoda/horaa.git"
+        "url" : "git@github.com:themallen/moraa.git"
     },
-
+   "dependencies": {
+        "key-del": "~0.1.6"
+    },
     "devDependencies": {
         "mocha"  : "0.7.1",
         "jshint" : ">=0.5.2",
