@@ -29,6 +29,8 @@ var fs = require('fs');
 var path = require('path');
 var fooPath = path.join(__dirname, 'support/foo.js');
 var buzzPath = path.join(__dirname, 'support/buzz.js');
+var nestedPath = path.join(__dirname, 'support/nested.js');
+var nested = require(nestedPath);
 var foo = require(fooPath);
 
 describe('moraa', function() {
@@ -199,6 +201,41 @@ describe('moraa', function() {
                     });
                 });
             });
+
         });
     });
+
+    describe('mocking nested keys', function(done){
+        var nestedMoraa;
+        before(function(){
+            nestedMoraa = moraa(nestedPath);
+            nestedMoraa.hijack('deeply.nested.keys.are.cool','FAKE');
+            nestedMoraa.hijack('deeply.nested.keys.arenot.chillaxin','awesome word');
+        });
+
+        describe('hijacked property',function(){
+            it('returns replacement value ',function(){
+                assert.equal(nested.deeply.nested.keys.are.cool,'FAKE');
+                assert.equal(nested.deeply.nested.keys.arenot.chillaxin,'awesome word');
+            });
+
+            it('does not affect other properties along the tree',function(){
+                assert.equal(nested.shallowly,'real');
+                assert.equal(nested.deeply.nested.keys.fit.within.deeply.nested.locks,'real');
+            });
+        });
+
+        describe('restored property',function(){
+            before(function(){
+                nestedMoraa.restore('deeply.nested.keys.are.cool');
+                nestedMoraa.restore('deeply.nested.keys.arenot.chillaxin');
+            });
+
+            it('returns original value',function(){
+                assert.equal(nested.deeply.nested.keys.are.cool,'real');
+                assert.equal(nested.deeply.nested.keys.arenot.chillaxin,'real');
+            });
+        });
+    });
+
 });
